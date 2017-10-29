@@ -2,11 +2,14 @@
 
 slp_track=0
 max_st=59
+tmp=""
+update_now=0
 
 declare -a cmd_arr=()
 
 function finish {
 	unset per
+	unset tmp
 	unset cur
 	unset wind
 	unset desk
@@ -17,7 +20,12 @@ function finish {
 trap finish EXIT
 
 function get_focused_window {
+	tmp="$wind"
 	wind=$(xdotool getwindowfocus getwindowname)
+	if [ "$tmp" == "$wind" ] && [ "$update_now" -ne "1" ]; then
+		update_now="1"
+	fi
+	unset tmp
 }
 
 function get_battery {
@@ -26,12 +34,26 @@ function get_battery {
 }
 
 function get_date {
-	cur=$(date "+%a %b %d, %H:%M:%S")
+	tmp="$cur"
+	cur=$(date "+%a %b %d, %H:%M")
+	if [ "$tmp" == "$cur" ] && [ "$update_now" -ne "1" ]; then
+		update_now="1"
+	fi
+	unset tmp
 }
 
 function get_desktop {
+	tmp="$desk"
 	desk=$(wmctrl -d | grep "*")
 	desk=${desk:0:1}
+	if [ "$tmp" == "$desk" ] && [ "$update_now" -ne "1" ]; then
+		update_now="1"
+	fi
+	unset tmp
+}
+
+function update_bar {
+	echo "%{l} [$desk] $wind""%{c}$cur""%{r}$per "
 }
 
 function set_arr {
@@ -39,19 +61,46 @@ function set_arr {
 		if [ "$[ $i % 20 ]" -eq "0" ]; then
 			cmd_arr+=( "get_battery;" )
 		fi
-		cmd_arr+=( "get_focused_window; get_desktop; get_date;" )
+		cmd_arr+=( "get_desktop; get_date;" )
+		cmd_arr+=( "get_date;" )
+		cmd_arr+=( "get_focused_window; get_desktop;" )
 	done
 }
 
-set_arr
+function main {
+	#set_arr
 
-while true; do
-	eval ${cmd_arr[$slp_track]}
-	echo "%{l} [$desk] $wind""%{c}$cur""%{r}$per "
+	get_battery
+	cur=0
 
-	slp_track=$[ $slp_track + 1 ]
-	if [ "$slp_track" -eq "$max_st" ]; then
-		slp_track=0
-	fi
-	sleep 1
-done
+	while true; do
+		eval ${cmd_arr[$slp_track]}
+		#if [ "$[ $slp_track % 20 ]" -eq "0" ]; then
+		#	get_battery
+		#fi
+		get_date
+#		cur=$[ $cur + 1 ]
+		get_focused_window
+		get_desktop
+#		get_battery
+		slp_track=$[ $slp_track + 1 ]
+		if [ "$slp_track" -eq "$max_st" ]; then
+			get_battery
+			slp_track=0
+		fi
+		if [ "$update_now" -eq "1" ]; then
+			update_now="0"
+			update_bar
+		fi
+		sleep 1
+	done
+}
+
+function meh {
+	while true; do
+		sleep 1
+	done
+}
+
+main
+#meh
