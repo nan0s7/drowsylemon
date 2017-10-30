@@ -84,7 +84,7 @@ function get_offset {
 function maintain_time_sync {
 	tmp=$(date "+%S")
 	if [ "$tmp" -gt "2" ]; then
-		minute_scaled="$[ $minute_scaled - 2 ]"
+		minute_scaled="$[ $minute_scaled - 1 ]"
 	elif [ "$tmp" -ge "0" ] || [ "$tmp" -le "2" ]; then
 		minute_scaled="$max_sleep"
 	fi
@@ -117,19 +117,14 @@ function main {
 	done
 
 	while true; do
-		# update every 5 minutes
+		get_date
 		get_battery
 		maintain_time_sync
-		for j in `seq 0 4`; do
-			# update every minute
-			get_date
-			for i in `seq 0 $minute_scaled`; do
-				# update every second (or so)
-				get_focused_window
-				get_desktop
-				update_bar
-				sleep "$slp"
-			done
+		for i in `seq 0 $minute_scaled`; do
+			get_focused_window
+			get_desktop
+			update_bar
+			sleep "$slp"
 		done
 	done
 }
