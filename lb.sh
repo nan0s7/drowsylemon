@@ -1,29 +1,36 @@
 #!/bin/bash
 
-slp_track="0"
+# Modify these if you like
 slp="2"
-max_st="$[ 59 / $slp ]"
-max_sleep="$max_st"
+time_scale="59"
+
+# Don't change these
 tmp=""
-old_per=""
+offset="0"
+old_per="0"
 old_desk="0"
 update_now="0"
+
+options="$1"
+max_sleep="$minute_scaled"
+minute_scaled="$[ $time_scale / $slp ]"
 
 declare -a cmd_arr=()
 
 function finish {
 	unset per
 	unset tmp
+	unset time_scale
+	unset max_sleep
 	unset old_per
 	unset old_desk
 	unset update_now
 	unset cur
+	unset offset
 	unset wind
 	unset desk
-	unset slp_track
 	unset slp
-	unset max_st
-	unset cmd_arr
+	unset minute_scaled
 }
 trap finish EXIT
 
@@ -70,16 +77,16 @@ function get_desktop {
 
 function get_offset {
 	offset=$(date "+%S")
-	offset=$[ 59 - $offset ]
-	offset=$[ $offset / $slp ]
+	offset="$[ $time_scale - $offset ]"
+	offset="$[ $offset / $slp ]"
 }
 
 function maintain_time_sync {
 	tmp=$(date "+%S")
 	if [ "$tmp" -gt "2" ]; then
-		max_st="$[ $max_st - 1 ]"
+		minute_scaled="$[ $minute_scaled - 2 ]"
 	elif [ "$tmp" -ge "0" ] || [ "$tmp" -le "2" ]; then
-		max_st="$max_sleep"
+		minute_scaled="$max_sleep"
 	fi
 	unset tmp
 }
@@ -101,7 +108,6 @@ function update_bar {
 
 function main {
 	init_values
-	update_bar
 
 	for i in `seq 0 $offset`; do
 		get_focused_window
@@ -111,14 +117,19 @@ function main {
 	done
 
 	while true; do
-		get_date
+		# update every 5 minutes
 		get_battery
 		maintain_time_sync
-		for i in `seq 0 $max_st`; do
-			get_focused_window
-			get_desktop
-			update_bar
-			sleep "$slp"
+		for j in `seq 0 4`; do
+			# update every minute
+			get_date
+			for i in `seq 0 $minute_scaled`; do
+				# update every second (or so)
+				get_focused_window
+				get_desktop
+				update_bar
+				sleep "$slp"
+			done
 		done
 	done
 }
