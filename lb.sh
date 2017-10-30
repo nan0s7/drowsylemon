@@ -1,19 +1,23 @@
 #!/bin/bash
 
-slp_track=0
-max_st=60
+slp_track="0"
+slp="2"
+max_st="60"
 tmp=""
-update_now=0
+old_tmp=""
+update_now="0"
 
 declare -a cmd_arr=()
 
 function finish {
 	unset per
 	unset tmp
+	unset old_tmp
 	unset cur
 	unset wind
 	unset desk
 	unset slp_track
+	unset slp
 	unset max_st
 	unset cmd_arr
 }
@@ -24,14 +28,18 @@ function get_focused_window {
 	wind=$(xdotool getwindowfocus getwindowname)
 	if [ "$tmp" != "$wind" ] && [ "$update_now" -ne "1" ]; then
 		update_now="1"
-#		echo "updated window"
 	fi
 	unset tmp
 }
 
 function get_battery {
+#    tmp="$per"
 	per=$(acpi --battery) #| cut -d, -f2)
-	per=${per:11}
+    old_tmp="$per"
+    if [ "$old_tmp" != "$per" ] && [ "$update_now" -ne "1" ]; then
+	    per=${per:11}
+	    update_now="1"
+	fi
 }
 
 function get_date {
@@ -39,18 +47,17 @@ function get_date {
 	cur=$(date "+%a %b %d, %H:%M")
 	if [ "$tmp" != "$cur" ] && [ "$update_now" -ne "1" ]; then
 		update_now="1"
-#		echo "updated date"
 	fi
 	unset tmp
 }
 
 function get_desktop {
-	tmp="$desk"
+#	tmp="$desk"
 	desk=$(wmctrl -d | grep "*")
-	desk=${desk:0:1}
-	if [ "$tmp" != "$desk" ] && [ "$update_now" -ne "1" ]; then
+    old_tmp="$desk"
+	if [ "$old_tmp" != "$desk" ] && [ "$update_now" -ne "1" ]; then
+	    desk=${desk:0:1}
 		update_now="1"
-#		echo "updated desktop"
 	fi
 	unset tmp
 }
@@ -71,44 +78,28 @@ function set_arr {
 }
 
 function main {
-	#set_arr
+#	set_arr
 
 	get_battery
 	cur=0
 
 	while true; do
 		eval ${cmd_arr[$slp_track]}
-		#if [ "$[ $slp_track % 20 ]" -eq "0" ]; then
-		#	get_battery
-		#fi
-		get_date
 #		cur=$[ $cur + 1 ]
+		get_date
 		get_focused_window
 		get_desktop
-#		get_battery
-		slp_track=$[ $slp_track + 1 ]
-#		echo "slp_track="$slp_track
+		slp_track=$[ $slp_track + $slp ]
 		if [ "$slp_track" -eq "$max_st" ]; then
 			get_battery
-#			echo "reset slp_track"
 			slp_track=0
 		fi
 		if [ "$update_now" -eq "1" ]; then
 			update_now="0"
-#			echo "update_now="$update_now
-#			echo "updated bar"
 			update_bar
 		fi
-#		echo
-		sleep 1
-	done
-}
-
-function meh {
-	while true; do
-		sleep 1
+		sleep "$slp"
 	done
 }
 
 main
-#meh
