@@ -29,7 +29,7 @@ trap finish EXIT
 
 function get_focused_window {
 	tmp=$(xdotool getwindowfocus getwindowname)
-	if [ "$tmp" != "$wind" ]; then #&& [ "$update_now" -ne "1" ]; then
+	if [ "$tmp" != "$wind" ]; then
 		wind="$tmp"
 		update_now="1"
 	fi
@@ -37,11 +37,12 @@ function get_focused_window {
 }
 
 function get_battery {
-	tmp=$(acpi --battery) #| cut -d, -f2)
-    if [ "$old_per" != "$tmp" ]; then #&& [ "$update_now" -ne "1" ]; then
+	tmp=$(acpi --battery)
+    if [ "$old_per" != "$tmp" ]; then
 	    old_per="$per"
 	    per="$tmp"
-	    per=${per:11}
+	    #per=${per:11}
+	    per=`echo $tmp | cut -d, -f2`
 	    update_now="1"
 	fi
 	unset tmp
@@ -49,7 +50,7 @@ function get_battery {
 
 function get_date {
 	tmp=$(date "+%a %b %d, %H:%M")
-	if [ "$tmp" != "$cur" ]; then #&& [ "$update_now" -ne "1" ]; then
+	if [ "$tmp" != "$cur" ]; then
 		cur="$tmp"
 		update_now="1"
 	fi
@@ -58,7 +59,7 @@ function get_date {
 
 function get_desktop {
 	tmp=$(wmctrl -d | grep "*")
-	if [ "$old_desk" != "$tmp" ]; then #&& [ "$update_now" -ne "1" ]; then
+	if [ "$old_desk" != "$tmp" ]; then
 	    old_desk="$desk"
 	    desk="$tmp"
 	    desk=${desk:0:1}
@@ -80,6 +81,7 @@ function maintain_time_sync {
 	elif [ "$tmp" -ge "0" ] || [ "$tmp" -le "2" ]; then
 		max_st="$max_sleep"
 	fi
+	unset tmp
 }
 
 function init_values {
@@ -97,20 +99,7 @@ function update_bar {
 	fi
 }
 
-function set_arr {
-	tmp="get_battery;"
-	for i in `seq 0 $max_st`; do
-		tmp="$tmp""get_date;get_desktop;get_focused_window;"
-		cmd_arr+=( "$tmp" )
-		tmp=""
-	done
-}
-
 function main {
-#	set_arr
-
-#	get_battery
-#	cur=0
 	init_values
 	update_bar
 
@@ -126,16 +115,9 @@ function main {
 		get_battery
 		maintain_time_sync
 		for i in `seq 0 $max_st`; do
-#			eval ${cmd_arr[$i]}
-#			cur=$[ $cur + 1 ]
 			get_focused_window
 			get_desktop
-#			if [ "$slp_track" -eq "$max_st" ]; then
-#				get_battery
-#				slp_track=0
-#			fi
 			update_bar
-#			slp_track=$[ $slp_track + $slp ]
 			sleep "$slp"
 		done
 	done
