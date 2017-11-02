@@ -21,6 +21,8 @@ function finish {
 	unset tmp
 	unset time_scale
 	unset new_per
+	unset min
+	unset options
 	unset new_desk
 	unset update_now
 	unset cur
@@ -61,6 +63,7 @@ function get_date {
 function get_desktop {
 	new_desk="$(wmctrl -d | grep '*')"
 	new_desk="${new_desk:0:1}"
+#	new_desk="$(xdotool get_desktop)"
 	if [ "$new_desk" != "$desk" ]; then
 	    desk="$new_desk"
 		update_now="1"
