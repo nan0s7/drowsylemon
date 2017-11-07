@@ -40,27 +40,27 @@ get_focused_window() {
 	tmp="${tmp#*= *}"
 	tmp="${tmp//\"}"
 	#tmp="$(xdotool getwindowfocus getwindowname)"
-#	if [ "$tmp" != "$wind" ]; then
-	wind="$tmp"
-#		update_now="1"
-#	fi
+	if [ "$tmp" != "$wind" ]; then
+		wind="$tmp"
+		update_now="1"
+	fi
 #	unset tmp
 }
 
 get_battery() {
     tmp="$(acpi --battery | cut -d, -f2)"
-#    if [ "$tmp" != "$per" ]; then
-	per="$tmp"
-#	    update_now="1"
-#	fi
+    if [ "$tmp" != "$per" ]; then
+		per="$tmp"
+	    update_now="1"
+	fi
 }
 
 get_date() {
 	tmp="$(date '+%a %b %d, %H:%M')"
-#	if [ "$tmp" != "$cur" ]; then
-	cur="$tmp"
-#		update_now="1"
-#	fi
+	if [ "$tmp" != "$cur" ]; then
+		cur="$tmp"
+		update_now="1"
+	fi
 #	unset tmp
 }
 
@@ -73,10 +73,10 @@ get_desktop() {
 #	new_desk="${new_desk:0:1}"
 #	new_desk="$[ $new_desk + 1 ]"
 #	new_desk="$(xdotool get_desktop)"
-#	if [ "$tmp" != "$desk" ]; then
-	desk="$tmp"
-#		update_now="1"
-#	fi
+	if [ "$tmp" != "$desk" ]; then
+		desk="$tmp"
+		update_now="1"
+	fi
 }
 
 get_seconds_offset() {
@@ -108,10 +108,10 @@ init_values() {
 }
 
 update_bar() {
-#	if [ "$update_now" -eq "1" ]; then
-	echo "%{l} [$desk] $wind""%{c}$cur""%{r}$per "
-#		update_now="0"
-#	fi
+	if [ "$update_now" -eq "1" ]; then
+		echo "%{l} [$desk] $wind""%{c}$cur""%{r}$per "
+		update_now="0"
+	fi
 }
 
 main() {
