@@ -8,6 +8,7 @@ I'm constantly working on ways to make this more efficient without needing to re
 ## Dependencies
 **Bash version:**
 - some packages (to be ammended at a later date)
+
 **Python version:**
 - python3
 - modules: subprocess, time
