@@ -24,12 +24,14 @@ def get_time_offset(time_scale, sleep):
 def align_time(time_scale, sleep, minute_scaled):
 	tmp = subprocess.run(["date", "+%S"], stdout=subprocess.PIPE).stdout.decode('utf-8')
 	tmp = int(tmp)
-	if tmp > 5:
+	if tmp > 14:
 		return round((time_scale - tmp + 2) / sleep)
-	elif tmp > 2:
+	elif tmp > 7:
 		return minute_scaled - 1
-	else:
+	elif tmp > 2:
 		return round(time_scale / sleep)
+	else:
+		return round(time_scale / sleep) + 1
 
 def get_date():
 	tmp = subprocess.run(["date", "+%a %b %d, %H:%M"], stdout=subprocess.PIPE).stdout.decode('utf-8')
@@ -52,105 +54,61 @@ def set_bar_information(left, middle, right):
 		set_right_information(right)
 	return info
 
-def check_updatable(new_info, old_info):
-	tmp = False
-#	for i in range(len(new_info)):
-	if new_info != old_info:
-		tmp = True
-	if tmp == True:
-#		set_bar_information(left_info, middle_info, right_info)
-#		bar_information = \
-#			set_left_information(new_info[2]) +\
-#			set_middle_information(new_info[0]) +\
-#			set_right_information(new_info[1])
-		print_bar_information(new_info)
-	return tmp
-
 def main():
 	sleep = 1
 	time_scale = 59
 	minute_scaled = 0
 	bar_information = ""
-	old_information = ""
 	bar_battery = ""
 	bar_date = ""
 	bar_desktop = ""
-#	information_array = []
 	left_info = ""
 	middle_info = ""
 	right_info = ""
+	min = 0
 
 	offset = get_time_offset(time_scale, sleep)
-#	minute_scaled = align_time(time_scale, sleep, minute_scaled)
 
 	# init values
-#	information_array.append(get_date())
-#	information_array.append(get_battery())
-#	information_array.append(get_desktop())
-	left_info = get_desktop()
-	middle_info = get_date()
-	right_info = get_battery()
+	bar_desktop = get_desktop()
+	bar_date = get_date()
+	bar_battery = get_battery()
+	left_info = bar_desktop
+	middle_info = bar_date
+	right_info = bar_battery
 	bar_information = set_bar_information(left_info, middle_info, right_info)
-#	bar_information = \
-#		set_left_information(left_info) +\
-#		set_middle_information(middle_info) +\
-#		set_right_information(right_info)
-	# expand old_information
-#	for i in range(len(information_array)):
-#		old_information.append("")
+	print_bar_information(bar_information)
 
 	# fix time
 	for i in range(offset):
-#		bar_desktop = get_desktop()
-#		information_array[2] = bar_desktop
-		left_info = get_desktop()
-#		print(bar_information)
-		bar_information = set_bar_information(left_info, middle_info, right_info)
-#		print(bar_information)
-		tmp = check_updatable(bar_information, old_information)
-		if tmp == True:
-			old_information = bar_information
-#			print("updated in offset")
+		tmp = bar_desktop
+		bar_desktop = get_desktop()
+		if tmp != bar_desktop:
+			left_info = bar_desktop
+			bar_information = set_bar_information(left_info, middle_info, right_info)
+			print_bar_information(bar_information)
 		time.sleep(sleep)
 
-#	minute_scaled = align_time(time_scale, sleep, minute_scaled)
-
-	# force an update
-#	information_array = []
-#	information_array.append(get_date())
-#	information_array.append(get_battery())
-#	information_array.append(get_desktop())
-
-#	left_info = get_desktop()
-#	middle_info = get_date()
-#	right_info = get_battery()
-#	set_bar_information(left_info, middle_info, right_info)
-#	tmp = check_updatable(bar_information, old_information)
-#	if tmp:
-#		old_information = bar_information
+	minute_scaled = align_time(time_scale, sleep, minute_scaled)
 
 	while True:
 		minute_scaled = align_time(time_scale, sleep, minute_scaled)
-
-		middle_info = get_date()
-		right_info = get_battery()
-#		information_array = []
-#		information_array.append(get_date())
-#		information_array.append(get_battery())
+		bar_date = get_date()
+		middle_info = bar_date
+		if min == 5:
+			bar_battery = get_battery()
+			right_info = bar_battery
+			min = 0
+		bar_information = set_bar_information(left_info, middle_info, right_info)
+		print_bar_information(bar_information)
 		for i in range(minute_scaled):
-#			bar_desktop = get_desktop()
-#			if len(information_array) == 2:
-#				information_array.append(bar_desktop)
-#			else:
-#				information_array[2] = bar_desktop
-			left_info = get_desktop()
-			bar_information = set_bar_information(left_info, middle_info, right_info)
-			tmp = check_updatable(bar_information, old_information)
-			if tmp == True:
-				old_information = bar_information
-#				print("updated in main")
+			tmp = bar_desktop
+			bar_desktop = get_desktop()
+			if tmp != bar_desktop:
+				left_info = bar_desktop
+				bar_information = set_bar_information(left_info, middle_info, right_info)
+				print_bar_information(bar_information)
 			time.sleep(sleep)
+		min += 1
 
 main()
-
-# need to seperate updates of individual information
