@@ -1,4 +1,4 @@
-# ndrowsylemon
+# drowsylemon
 A lazy/battery efficient Bash script for managing _lemonbar_.
 
 What that means is that Drowsy lemonbar only updates when it needs to. It is also easy to seperate commands so that they update at different periods, delaying the battery hungry ones as long as possible.
