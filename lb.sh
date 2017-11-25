@@ -12,6 +12,9 @@ new_per="0"
 new_desk="0"
 update_now="0"
 
+old_bar_text=""
+bar_text=""
+
 options="$1"
 minute_scaled="$[ $time_scale / $slp ]"
 declare -a cmd_arr=()
@@ -40,43 +43,43 @@ get_focused_window() {
 	tmp="${tmp#*= *}"
 	tmp="${tmp//\"}"
 	#tmp="$(xdotool getwindowfocus getwindowname)"
-	if [ "$tmp" != "$wind" ]; then
-		wind="$tmp"
-		update_now="1"
-	fi
+#	if [ "$tmp" != "$wind" ]; then
+#		wind="$tmp"
+#		update_now="1"
+#	fi
+	wind="$tmp"
 #	unset tmp
 }
 
 get_battery() {
-    tmp="$(acpi --battery | cut -d, -f2)"
-    if [ "$tmp" != "$per" ]; then
-		per="$tmp"
-	    update_now="1"
-	fi
+    per="$(acpi --battery | cut -d, -f2)"
+#    echo "$per"
+#   if [ "$tmp" != "$per" ]; then
+#		per="$tmp"
+#	    update_now="1"
+#	fi
+#	per="$tmp"
 }
 
 get_date() {
-	tmp="$(date '+%a %b %d, %H:%M')"
-	if [ "$tmp" != "$cur" ]; then
-		cur="$tmp"
-		update_now="1"
-	fi
-#	unset tmp
+	cur="$(date '+%a %b %d, %H:%M')"
+#	echo "$cur"
+#	if [ "$tmp" != "$cur" ]; then
+#		cur="$tmp"
+#		if 
+#	fi
 }
 
 get_desktop() {
 	tmp="$(wmctrl -d)"
 	tmp="${tmp%*  \* *}"
-#	tmp="${tmp: -1}"
-	tmp="$[ ${tmp: -1} + 1 ]"
-#	new_desk="$(wmctrl -d | grep '*')"
-#	new_desk="${new_desk:0:1}"
-#	new_desk="$[ $new_desk + 1 ]"
-#	new_desk="$(xdotool get_desktop)"
-	if [ "$tmp" != "$desk" ]; then
-		desk="$tmp"
-		update_now="1"
-	fi
+	desk="${tmp: -1}"
+#	update_now="1"
+#	desk="$tmp"
+#	if [ "$tmp" != "$desk" ]; then
+#		desk="$tmp"
+#		echo "$desk"
+#	fi
 }
 
 get_seconds_offset() {
@@ -99,6 +102,17 @@ sync_time_update() {
 #	unset tmp
 }
 
+update_bar() {
+#	tmp="$bar_text"
+	bar_text="%{l} $desk""%{c}$cur""%{r}$per "
+#	if ! [ "$bar_text" = "$tmp" ]; then
+	echo "$bar_text"
+#	fi
+#	if [ "$update_now" -eq "1" ]; then
+#		echo "%{l} $desk""%{c}$cur""%{r}$per "
+#	fi
+}
+
 init_values() {
 	get_seconds_offset
 	get_date
@@ -107,19 +121,13 @@ init_values() {
 	get_focused_window
 }
 
-update_bar() {
-	if [ "$update_now" -eq "1" ]; then
-		echo "%{l} [$desk] $wind""%{c}$cur""%{r}$per "
-		update_now="0"
-	fi
-}
-
 main() {
 	init_values
 
 	for i in `seq 0 $offset`; do
 		get_focused_window
 		get_desktop
+#		check_new_vals
 		update_bar
 		sleep "$slp"
 	done
@@ -135,8 +143,9 @@ main() {
 			min="0"
 		fi
 		for i in `seq 0 $minute_scaled`; do
-			get_focused_window
+#			get_focused_window
 			get_desktop
+#			check_new_vals
 			update_bar
 			sleep "$slp"
 		done
