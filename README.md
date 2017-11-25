@@ -30,4 +30,7 @@ For example: `./lb.sh | lemonbar -p`
 
 A similar method is used for the Python version: `python3 pydlb.py | lemonbar -p`
 
+For the task-manager plugin to work you need to pipe the output into sh as follows:
+`python3 pydlb.py | lemonbar | sh`
+
 Please keep in mind that this is for my personal use at the moment, and I will change things and break things often as I see fit whilst I experiment. Additionally, in its unreleased state, things will be re-arranged and added/removed often.
