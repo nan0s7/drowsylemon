@@ -12,6 +12,7 @@ The Bash and Python versions are not always equal in features and functionality.
 - some packages (to be ammended at a later date)
 
 uses the commands: wmctrl, xdotools, xprop, ps, wc, uname, acpi (T), date
+
 the (T) means the command may be replaced on a later date
 
 **Python version:**
