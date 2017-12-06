@@ -10,12 +10,12 @@ min="0"
 offset="0"
 #new_per="0"
 #new_desk="0"
-update_now="0"
+update_now="1"
 
 old_bar_text=""
 bar_text=""
 
-options="$1"
+#options="$1"
 minute_scaled="$[ $time_scale / $slp ]"
 #declare -a cmd_arr=()
 
@@ -25,7 +25,7 @@ finish() {
 	unset time_scale
 #	unset new_per
 	unset min
-	unset options
+#	unset options
 #	unset new_desk
 	unset update_now
 	unset cur
@@ -61,18 +61,20 @@ trap finish EXIT
 get_battery() {
 	# This command will change in the future
     per="$(acpi --battery | cut -d, -f2)"
+    echo "$per"
 }
 
 get_date() {
 	cur="$(date '+%a %b %d, %H:%M')"
+	echo "$cur"
 }
 
-get_desktop() {
-	tmp="$(wmctrl -d)"
-	tmp="${tmp%*  \* *}"
-	desk="${tmp: -1}"
-	update_now="1"
-}
+#get_desktop() {
+#	tmp="$(wmctrl -d)"
+#	tmp="${tmp%*  \* *}"
+#	desk="${tmp: -1}"
+#	update_now="1"
+#}
 
 declare -a task_hexs=()
 declare -a task_wins=()
@@ -80,22 +82,24 @@ pc_name="$(uname -n)"
 max_task_len="100"
 active_win=""
 old_active_win=""
-win_num=""
-old_win_num=""
+#win_num=""
+#old_win_num=""
 win_list=""
 active_col="%{B#545454}"
 not_col="%{B-}"
 format_len="4"
 
 get_tasks() {
-	win_num="$(ps -u --no-headers | wc -l)"
+	# I would like to change the win_num calculation someday
+	# could remove it and just add array comparison for format_tasks
+#	win_num="$(ps -u --no-headers | wc -l)"
 	get_active_win
-	if [ "$active_win" != "$old_active_win" ] || [ "$old_win_num" != "$win_num" ]; then
+	if [ "$active_win" != "$old_active_win" ]; then #|| [ "$old_win_num" != "$win_num" ]; then
 		IFS='
 		'
 		win_list="$(wmctrl -l)"
 		win_list="${win_list//$pc_name/}"
-		old_win_num="$win_num"
+#		old_win_num="$win_num"
 		old_active_win="$active_win"
 		task_hexs=()
 		task_wins=()
@@ -112,16 +116,20 @@ get_tasks() {
 }
 
 get_active_win() {
-	active_win="$(xprop -root _NET_ACTIVE_WINDOW)"
-	active_win="${active_win#* # }"
-	tmp="${#active_win}"
-	if [ "$tmp" -gt "3" ]; then
-		for i in `seq 0 $[ 9 - $tmp ]`; do
-			active_win="${active_win:0:2}""0""${active_win:2}"
-		done
-	else
-		get_desktop
-	fi
+	# would be good if I could reduce frequency of this command
+#	active_win="$(xprop -root _NET_ACTIVE_WINDOW)"
+#	active_win="${active_win#* # }"
+	# or just use a better one:
+	active_win="$(pfw)"
+#	tmp="${#active_win}"
+#	if [ "$tmp" -gt "3" ]; then
+#		for i in `seq 0 $[ 9 - $tmp ]`; do
+#			active_win="${active_win:0:2}""0""${active_win:2}"
+#		done
+#	else
+#		get_desktop
+#	fi
+#	echo $active_win
 }
 
 format_tasks() {
@@ -151,7 +159,8 @@ format_tasks() {
 			tasks+="${win_i:1:$cut_len}$spacer%{A}"
 		fi
 	done
-	update_now="1"
+	echo "$tasks"
+#	update_now="1"
 }
 
 get_seconds_offset() {
@@ -180,46 +189,79 @@ sync_time_update() {
 
 update_bar() {
 	if [ "$update_now" -eq "1" ]; then
-		bar_text="%{l} $desk$tasks""%{c}$cur""%{r}$per "
-		echo "$bar_text"
+#		bar_text="%{l} $desk$tasks""%{c}$cur""%{r}$per "
+#		echo "$bar_text"
+		echo "%{l} ${information[0]}%{c}${information[1]}%{r}${information[2]} "
 		update_now="0"
-#		echo "update bar"
-#		echo
 	fi
-#	printf "%s%s%s\\n" "$bar_text"
 }
 
+declare -a information=()
+
+
+# either just make coder remember the place in array that certain info
+# is, or do a nfancurve thing with two arrays that use each other
+update_information() {
+	information["$1"]="$2"
+}
+
+try_update() {
+	tmp="$1"
+	old_tmp="$2"
+	arr_pos="$3"
+	if [ "$tmp" != "$old_tmp" ]; then
+		update_information "$arr_pos" "$tmp"
+		update_now="1"
+	fi
+}
+
+#init_values() {
+#	get_seconds_offset
+#	get_date
+#	get_battery
+#	get_tasks
+#}
 init_values() {
+	# second offsets isn't to be displayed on panel
 	get_seconds_offset
-	get_date
-	get_battery
-	get_tasks
+
+	# these are and are in display order (not needed)
+	information+=( "$(get_tasks)" )
+	information+=( "$(get_date)" )
+	information+=( "$(get_battery)" )
+}
+
+run_commands() {
+#	get_tasks
+	try_update "$(get_tasks)" "${information[0]}" "0"
+	# get_tasks already checks for change so don't use try_update
+#	update_information "0" "$(get_tasks)"
+	update_bar
+	sleep "$slp"
 }
 
 main() {
 	init_values
 
 	for i in `seq 0 $offset`; do
-		get_tasks
-		update_bar
-		sleep "$slp"
+		run_commands
 	done
 	unset offset
 
 	sync_time_update
 
 	while true; do
-		get_date
+#		get_date
+		update_information "1" "$(get_date)"
 		if [ "$min" -eq "5" ]; then
-			get_battery
+#			get_battery
+			update_information "2" "$(get_battery)"
 			sync_time_update
 			min="0"
 		fi
 		update_now="1"
 		for i in `seq 0 $minute_scaled`; do
-			get_tasks
-			update_bar
-			sleep "$slp"
+			run_commands
 		done
 		min="$[ $min + 1 ]"
 	done
