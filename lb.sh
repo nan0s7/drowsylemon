@@ -5,7 +5,7 @@ slp="1"
 time_scale="59"
 
 # Don't change these
-tmp=""
+#tmp=""
 min="0"
 offset="0"
 #new_per="0"
@@ -18,6 +18,12 @@ bar_text=""
 #options="$1"
 minute_scaled="$[ $time_scale / $slp ]"
 #declare -a cmd_arr=()
+
+# long-term goals:
+# reduce number of tasks per second
+# make configuration more modular
+# keep functionality while removing the information array
+# (reduce computation time by a decent amount, that way)
 
 finish() {
 	unset per
@@ -55,6 +61,8 @@ finish() {
 	unset cut_len
 	unset spacer_len
 	unset name_len
+	unset cdo
+	unset information
 }
 trap finish EXIT
 
@@ -78,6 +86,7 @@ get_date() {
 
 declare -a task_hexs=()
 declare -a task_wins=()
+declare -a information=()
 pc_name="$(uname -n)"
 max_task_len="100"
 active_win=""
@@ -88,6 +97,7 @@ win_list=""
 active_col="%{B#545454}"
 not_col="%{B-}"
 format_len="4"
+cdo="1"
 
 get_tasks() {
 	# I would like to change the win_num calculation someday
@@ -103,39 +113,44 @@ get_tasks() {
 		old_active_win="$active_win"
 		task_hexs=()
 		task_wins=()
-		for line in $win_list; do
-			task_hexs+=( "${line:0:10}" )
-			line="${line:12}"
-			win_desk="${line%% *}"
-			win_name="${line#$win_desk*}"
-#			win_name="${win_name:2}"
-			task_wins+=( "$win_desk""${win_name:2}" )
-		done
+		if [ "$cdo" -eq "1" ]; then
+			for line in $win_list; do
+				tmp="${line:0:10}"
+				if [ "$(wattr m $tmp; echo $?)" -eq "0" ]; then
+	#			win_desk="${line%% *}"
+	#			if [ "$win_desk" == "$desk" ]; then
+					task_hexs+=( "$tmp" )
+					line="${line:12}"
+					win_name="${line#${line%% *}*}"
+					task_wins+=( "${win_name:2}" )
+				fi
+			done
+		else
+			for line in $win_list; do
+				task_hexs+=( "${line:0:10}" )
+				line="${line:12}"
+				win_desk="${line%% *}"
+				win_name="${line#$win_desk*}"
+				task_wins+=( "$win_desk""${win_name:2}" )
+			done
+		fi
 		format_tasks
 	fi
 }
 
 get_active_win() {
-	# would be good if I could reduce frequency of this command
-#	active_win="$(xprop -root _NET_ACTIVE_WINDOW)"
-#	active_win="${active_win#* # }"
-	# or just use a better one:
 	active_win="$(pfw)"
-#	tmp="${#active_win}"
-#	if [ "$tmp" -gt "3" ]; then
-#		for i in `seq 0 $[ 9 - $tmp ]`; do
-#			active_win="${active_win:0:2}""0""${active_win:2}"
-#		done
-#	else
-#		get_desktop
-#	fi
-#	echo $active_win
 }
 
 format_tasks() {
 	tasks=""
 	# still needs work but it'll do for now
-	win_len="$[ $max_task_len / ${#task_hexs[@]} ]"
+	tmp="${#task_hexs[@]}"
+	if [ "$tmp" -gt "0" ]; then
+		win_len="$[ $max_task_len / ${#task_hexs[@]} ]"
+	else
+		win_len="0"
+	fi
 	for i in `seq 0 $[ ${#task_hexs[@]} - 1 ]`; do
 		hex_i="${task_hexs[$i]}"
 		win_i="${task_wins[$i]}"
@@ -148,15 +163,30 @@ format_tasks() {
 			done
 		fi
 		cut_len="$[ $win_len - $format_len - ${#spacer} ]"
+		# get rid of multiple if-statements in future
 		if [ "$active_win" = "$hex_i" ]; then
-			desk="${win_i:0:1}"
-			tasks+=" $desk) $active_col"
-			tasks+="${win_i:1:$cut_len}$spacer$not_col"
+			if [ "$cdo" -eq "0" ]; then
+				# can probably get rid of desk variable at some point
+				desk="${win_i:0:1}"
+				tasks+=" $desk) $active_col"
+				tasks+="${win_i:1:$cut_len}$spacer$not_col"
+			else
+				cut_len="$[ $cut_len + 1 ]"
+				tasks+=" $active_col"
+				tasks+="${win_i:0:$cut_len}$spacer$not_col"
+			fi
 		else
-			tasks+=" ${win_i:0:1}) "
+			if [ "$cdo" -eq "0" ]; then
+				tasks+=" ${win_i:0:1}) "
+				tasks+="%{A:wmctrl -a $hex_i -i; xdotool windowactivate $hex_i:}"
+				tasks+="${win_i:1:$cut_len}$spacer%{A}"
+			else
+				cut_len="$[ $cut_len + 1 ]"
+				tasks+=" "
+				tasks+="%{A:wmctrl -a $hex_i -i; xdotool windowactivate $hex_i:}"
+				tasks+="${win_i:0:$cut_len}$spacer%{A}"
+			fi
 			# command on left click
-			tasks+="%{A:wmctrl -a $hex_i -i; xdotool windowactivate $hex_i:}"
-			tasks+="${win_i:1:$cut_len}$spacer%{A}"
 		fi
 	done
 	echo "$tasks"
@@ -195,9 +225,6 @@ update_bar() {
 		update_now="0"
 	fi
 }
-
-declare -a information=()
-
 
 # either just make coder remember the place in array that certain info
 # is, or do a nfancurve thing with two arrays that use each other
