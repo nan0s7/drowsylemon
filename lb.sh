@@ -41,7 +41,7 @@ finish() {
 #	unset cur
 	unset offset
 #	unset wind
-	unset desk
+#	unset desk
 	unset slp
 	unset minute_scaled
 	unset task_hexs
@@ -51,7 +51,7 @@ finish() {
 	unset pc_name
 	unset max_task_len
 	unset win_list
-	unset old_win_num
+#	unset old_win_num
 	unset win_num
 	unset win_desk
 	unset active_col
@@ -65,6 +65,11 @@ finish() {
 	unset cut_len
 	unset spacer_len
 	unset name_len
+	unset win_count
+	unset desk_i
+	unset cdesk
+	unset IFS
+	unset task_desk
 #	unset cdo
 	unset information
 }
@@ -94,7 +99,7 @@ pc_name="$(uname -n)"
 max_task_len="100"
 active_win=""
 old_active_win=""
-win_list=""
+#win_list=""
 active_col="%{B#545454}"
 not_col="%{B-}"
 format_len="0"
@@ -106,7 +111,6 @@ get_tasks() {
 		win_list="${win_list//$pc_name/}"
 		old_active_win="$active_win"
 		win_num="0"
-#		win_count="0"
 		tasks=""
 		task_hexs=()
 		task_wins=()
@@ -117,7 +121,6 @@ get_tasks() {
 			tmp="${line:0:10}"
 			line="${line:12}"
 			win_desk="${line%% *}"
-#			if [ "$desk" -eq "$win_desk" ]; then
 			task_hexs+=( "$tmp" )
 			win_name="${line#$win_desk*}"
 			if [ "$tmp" = "$active_win" ]; then
@@ -125,6 +128,7 @@ get_tasks() {
 			fi
 			task_desk+=( "$win_desk" )
 			task_wins+=( "${win_name:2}" )
+			# test out efficiency vairation
 			# can make this optimisation for the other version too
 #			win_count="$[ $win_count + 1 ]"
 		done
