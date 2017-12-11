@@ -65,7 +65,7 @@ finish() {
 	unset cut_len
 	unset spacer_len
 	unset name_len
-	unset cdo
+#	unset cdo
 	unset information
 }
 trap finish EXIT
@@ -80,15 +80,15 @@ get_date() {
 }
 
 # make this better so I don't have to use xdotool
-get_desktop() {
-	tmp="$(wmctrl -d)"
-	tmp="${tmp%*  \* *}"
-	desk="${tmp: -1}"
-#	update_now="1"
-}
+#get_desktop() {
+#	desk="$(wmctrl -d)"
+#	desk="${desk%*  \* *}"
+#	desk="${desk: -1}"
+#}
 
 declare -a task_hexs=()
 declare -a task_wins=()
+declare -a task_desk=()
 declare -a information=()
 pc_name="$(uname -n)"
 max_task_len="100"
@@ -97,87 +97,78 @@ old_active_win=""
 win_list=""
 active_col="%{B#545454}"
 not_col="%{B-}"
-format_len="4"
-cdo="1"
+format_len="0"
 
-# maybe reduce array size if cdo=1 for less computation too later
 get_tasks() {
-	get_active_win
+	active_win="$(pfw)"
 	if [ "$active_win" != "$old_active_win" ]; then
 		win_list="$(wmctrl -l)"
+		win_list="${win_list//$pc_name/}"
 		old_active_win="$active_win"
+		win_num="0"
+		win_count="0"
+		tasks=""
 		task_hexs=()
 		task_wins=()
-#				if [ "$(wattr m $tmp; echo $?)" -eq "0" ]; then
-		win_list="${win_list//$pc_name/}"
+		task_desk=()
+#		if [ "$(wattr m $tmp; echo $?)" -eq "0" ]; then
 		IFS=$'\n'
-#		if [ "$cdo" -eq "1" ]; then
 		for line in $win_list; do
-			task_hexs+=( "${line:0:10}" )
+			tmp="${line:0:10}"
 			line="${line:12}"
 			win_desk="${line%% *}"
+#			if [ "$desk" -eq "$win_desk" ]; then
+			task_hexs+=( "$tmp" )
 			win_name="${line#$win_desk*}"
-			task_wins+=( "$win_desk""${win_name:2}" )
+			if [ "$tmp" = "$active_win" ]; then
+				cdesk="$win_desk"
+			fi
+			task_desk+=( "$win_desk" )
+			task_wins+=( "${win_name:2}" )
+			# can make this optimisation for the other version too
+#			win_count="$[ $win_count + 1 ]"
 		done
-		format_tasks
-	fi
-}
-
-get_active_win() {
-	active_win="$(pfw)"
-}
-
-format_tasks() {
-	tasks=""
-	# still needs work but it'll do for now
-	tmp="${#task_hexs[@]}"
-	if [ "$tmp" -gt "0" ]; then
-		win_len="$[ $max_task_len / $tmp ]"
-	else
-		win_len="0"
-	fi
-	# make this better
-	desk="$(xdotool get_desktop)" # put in an if
-	for i in `seq 0 $[ $tmp - 1 ]`; do
-		hex_i="${task_hexs[$i]}"
-		win_i="${task_wins[$i]}"
-		spacer=""
-		name_len="$[ ${#win_i} + $format_len ]"
-		if [ "$name_len" -lt "$win_len" ]; then
-			spacer_len="$[ $win_len - $name_len ]"
-			for i in `seq 0 $spacer_len`; do
-				spacer+=" "
-			done
-		fi
-		cut_len="$[ $win_len - $format_len - ${#spacer} ]"
-		# get rid of multiple if-statements in future
-		if [ "$active_win" = "$hex_i" ]; then
-			if [ "$cdo" -eq "0" ]; then
-				# can probably get rid of desk variable at some point
-				# or add it back in or something
-				tasks+=" ${win_i:0:1}"
-				tasks+=") $active_col"
-				tasks+="${win_i:1:$cut_len}$spacer$not_col"
-			else
-				tasks+=" $active_col"
-				tasks+="${win_i:1:$cut_len}$spacer$not_col"
-			fi
+		for line in $(lsw); do
+			win_num="$[ $win_num + 1 ]"
+		done
+		win_num="$[ $win_num - 1 ]"
+		if [ "$win_num" -gt "0" ]; then
+			win_len="$[ $max_task_len / $win_num ]"
 		else
-			win_desk="${win_i:0:1}"
-			if [ "$cdo" -eq "0" ]; then
-				tasks+=" $win_desk) "
-				tasks+="%{A:wmctrl -a $hex_i -i; xdotool windowactivate $hex_i:}"
-				tasks+="${win_i:1:$cut_len}$spacer%{A}"
-			else
-				# obvs cdo=1 will still have click events later
-				if [ "$win_desk" -eq "$desk" ]; then
-					tasks+=" ${win_i:1:$cut_len}$spacer"
-				fi
-			fi
-			# command on left click
+			win_len="0"
 		fi
-	done
-	echo "$tasks"
+		cut_len="$win_len"
+		for i in `seq 0 ${#task_hexs[@]}`; do
+			hex_i="${task_hexs[$i]}"
+			win_i="${task_wins[$i]}"
+			desk_i="${task_desk[$i]}"
+			if [ "$desk_i" = "$cdesk" ]; then
+				name_len="$[ ${#win_i} + $format_len ]"
+				if [ "$name_len" -lt "$win_len" ]; then
+					spacer=""
+					spacer_len="$[ $win_len - $name_len - $format_len ]"
+					for i in `seq 0 $spacer_len`; do
+						spacer+=" "
+					done
+					if [ "$active_win" = "$hex_i" ]; then
+						tasks+=" $active_col"
+						tasks+="$win_i$spacer$not_col"
+					else
+						tasks+=" $win_i$spacer"
+					fi
+				else
+					if [ "$active_win" = "$hex_i" ]; then
+						tasks+=" $active_col"
+						tasks+="${win_i:0:$cut_len}$spacer$not_col"
+					else
+						tasks+=" ${win_i:0:$cut_len}"
+					fi
+				fi
+#					tasks+="%{A:wmctrl -a $hex_i -i; xdotool windowactivate $hex_i:}"
+			fi
+		done
+		echo "$tasks"
+	fi
 }
 
 get_seconds_offset() {
@@ -209,6 +200,7 @@ update_bar() {
 #		bar_text="%{l} $desk$tasks""%{c}$cur""%{r}$per "
 #		echo "$bar_text"
 		echo "%{l} ${information[0]}%{c}${information[1]}%{r}${information[2]} "
+#		get_tasks
 		update_now="0"
 	fi
 }
