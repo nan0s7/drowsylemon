@@ -106,7 +106,7 @@ get_tasks() {
 		win_list="${win_list//$pc_name/}"
 		old_active_win="$active_win"
 		win_num="0"
-		win_count="0"
+#		win_count="0"
 		tasks=""
 		task_hexs=()
 		task_wins=()
@@ -128,17 +128,19 @@ get_tasks() {
 			# can make this optimisation for the other version too
 #			win_count="$[ $win_count + 1 ]"
 		done
-		for line in $(lsw); do
-			win_num="$[ $win_num + 1 ]"
+		win_count="${#task_hexs[@]}"
+		for i in `seq 0 $win_count`; do
+			if [ "$cdesk" = "${task_desk[$i]}" ]; then
+				win_num="$[ $win_num + 1 ]"
+			fi
 		done
-		win_num="$[ $win_num - 1 ]"
 		if [ "$win_num" -gt "0" ]; then
 			win_len="$[ $max_task_len / $win_num ]"
 		else
 			win_len="0"
 		fi
 		cut_len="$win_len"
-		for i in `seq 0 ${#task_hexs[@]}`; do
+		for i in `seq 0 $win_count`; do
 			hex_i="${task_hexs[$i]}"
 			win_i="${task_wins[$i]}"
 			desk_i="${task_desk[$i]}"
@@ -252,13 +254,13 @@ main() {
 	while true; do
 		for i in `seq 0 4`; do
 			update_information "1" "$(get_date)"
+			update_now="1"
 			for i in `seq 0 $minute_scaled`; do
 				run_min_cmds
 			done
+		done
 		update_information "2" "$(get_battery)"
 		sync_time_update
-		update_now="1"
-		done
 	done
 }
 
