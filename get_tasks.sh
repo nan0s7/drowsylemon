@@ -10,6 +10,7 @@ if [ "$active_win" != "$old_active_win" ]; then
 	declare -a task_hexs=()
 	declare -a task_wins=()
 	declare -a task_desk=()
+	declare -a count=( "0" "0" "0" "0" "0" "0" "0" "0" "0" )
 	win_list="$(wmctrl -l)"
 	win_list="${win_list//$(uname -n)/}"
 	old_active_win="$active_win"
@@ -20,6 +21,7 @@ if [ "$active_win" != "$old_active_win" ]; then
 		tmp="${line:0:10}"
 		line="${line:12}"
 		win_desk="${line%% *}"
+		count["$win_desk"]="$[ ${count[$win_desk]} + 1 ]"
 		task_hexs+=( "$tmp" )
 		win_name="${line#$win_desk*}"
 		if [ "$tmp" = "$active_win" ]; then
@@ -28,18 +30,13 @@ if [ "$active_win" != "$old_active_win" ]; then
 		task_desk+=( "$win_desk" )
 		task_wins+=( "${win_name:2}" )
 	done
-	win_count="${#task_hexs[@]}"
-	for i in `seq 0 $win_count`; do
-		if [ "$cdesk" = "${task_desk[$i]}" ]; then
-			win_len="$[ $win_len + 1 ]"
-		fi
-	done
+	win_len="${count[$cdesk]}"
 	if [ "$win_len" -gt "0" ]; then
 		win_len="$[ ${consts[0]} / $win_len ]"
 	else
 		win_len="0"
 	fi
-	for i in `seq 0 $win_count`; do
+	for i in `seq 0 ${#task_hexs[@]}`; do
 		hex_i="${task_hexs[$i]}"
 		win_i="${task_wins[$i]}"
 		if [ "${task_desk[$i]}" = "$cdesk" ]; then
