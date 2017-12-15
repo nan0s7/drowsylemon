@@ -1,23 +1,13 @@
 #!/bin/bash
 
-# Modify these if you like
 slp="1"
 time_scale="59"
-
-# Don't change these
-#tmp=""
-#min="0"
 offset="0"
-#new_per="0"
-#new_desk="0"
 update_now="1"
-
 old_bar_text=""
 bar_text=""
 
-#options="$1"
 minute_scaled="$[ $time_scale / $slp ]"
-#declare -a cmd_arr=()
 
 # long-term goals:
 # reduce number of tasks per second
@@ -33,44 +23,10 @@ finish() {
 	unset per
 	unset tmp
 	unset time_scale
-#	unset new_per
-#	unset min
-#	unset options
-#	unset new_desk
 	unset update_now
-#	unset cur
 	unset offset
-#	unset wind
-#	unset desk
 	unset slp
 	unset minute_scaled
-	unset task_hexs
-	unset task_wins
-	unset active_win
-	unset old_active_win
-	unset pc_name
-	unset max_task_len
-	unset win_list
-#	unset old_win_num
-	unset win_num
-	unset win_desk
-	unset active_col
-	unset not_col
-	unset tasks
-	unset spacer
-	unset hex_i
-	unset win_i
-	unset win_len
-	unset format_len
-	unset cut_len
-	unset spacer_len
-	unset name_len
-	unset win_count
-	unset desk_i
-	unset cdesk
-	unset IFS
-	unset task_desk
-#	unset cdo
 	unset information
 }
 trap finish EXIT
@@ -90,92 +46,6 @@ get_date() {
 #	desk="${desk%*  \* *}"
 #	desk="${desk: -1}"
 #}
-
-declare -a task_hexs=()
-declare -a task_wins=()
-declare -a task_desk=()
-declare -a information=()
-pc_name="$(uname -n)"
-max_task_len="100"
-active_win=""
-old_active_win=""
-#win_list=""
-active_col="%{B#545454}"
-not_col="%{B-}"
-format_len="0"
-
-get_tasks() {
-	active_win="$(pfw)"
-	if [ "$active_win" != "$old_active_win" ]; then
-		win_list="$(wmctrl -l)"
-		win_list="${win_list//$pc_name/}"
-		old_active_win="$active_win"
-		win_num="0"
-		tasks=""
-		task_hexs=()
-		task_wins=()
-		task_desk=()
-#		if [ "$(wattr m $tmp; echo $?)" -eq "0" ]; then
-		IFS=$'\n'
-		for line in $win_list; do
-			tmp="${line:0:10}"
-			line="${line:12}"
-			win_desk="${line%% *}"
-			task_hexs+=( "$tmp" )
-			win_name="${line#$win_desk*}"
-			if [ "$tmp" = "$active_win" ]; then
-				cdesk="$win_desk"
-			fi
-			task_desk+=( "$win_desk" )
-			task_wins+=( "${win_name:2}" )
-			# test out efficiency vairation
-			# can make this optimisation for the other version too
-#			win_count="$[ $win_count + 1 ]"
-		done
-		win_count="${#task_hexs[@]}"
-		for i in `seq 0 $win_count`; do
-			if [ "$cdesk" = "${task_desk[$i]}" ]; then
-				win_num="$[ $win_num + 1 ]"
-			fi
-		done
-		if [ "$win_num" -gt "0" ]; then
-			win_len="$[ $max_task_len / $win_num ]"
-		else
-			win_len="0"
-		fi
-		cut_len="$win_len"
-		for i in `seq 0 $win_count`; do
-			hex_i="${task_hexs[$i]}"
-			win_i="${task_wins[$i]}"
-			desk_i="${task_desk[$i]}"
-			if [ "$desk_i" = "$cdesk" ]; then
-				name_len="$[ ${#win_i} + $format_len ]"
-				if [ "$name_len" -lt "$win_len" ]; then
-					spacer=""
-					spacer_len="$[ $win_len - $name_len - $format_len ]"
-					for i in `seq 0 $spacer_len`; do
-						spacer+=" "
-					done
-					if [ "$active_win" = "$hex_i" ]; then
-						tasks+=" $active_col"
-						tasks+="$win_i$spacer$not_col"
-					else
-						tasks+=" $win_i$spacer"
-					fi
-				else
-					if [ "$active_win" = "$hex_i" ]; then
-						tasks+=" $active_col"
-						tasks+="${win_i:0:$cut_len}$spacer$not_col"
-					else
-						tasks+=" ${win_i:0:$cut_len}"
-					fi
-				fi
-#					tasks+="%{A:wmctrl -a $hex_i -i; xdotool windowactivate $hex_i:}"
-			fi
-		done
-		echo "$tasks"
-	fi
-}
 
 get_seconds_offset() {
 	offset="$(date '+%S')"
@@ -203,10 +73,7 @@ sync_time_update() {
 
 update_bar() {
 	if [ "$update_now" -eq "1" ]; then
-#		bar_text="%{l} $desk$tasks""%{c}$cur""%{r}$per "
-#		echo "$bar_text"
 		echo "%{l} ${information[0]}%{c}${information[1]}%{r}${information[2]} "
-#		get_tasks
 		update_now="0"
 	fi
 }
@@ -232,15 +99,13 @@ init_values() {
 	get_seconds_offset
 
 	# these are and are in display order (not needed)
-	information+=( "$(get_tasks)" )
+	information+=( "$(./test_lb.sh)" )
 	information+=( "$(get_date)" )
 	information+=( "$(get_battery)" )
 }
 
 run_min_cmds() {
-	try_update "$(get_tasks)" "${information[0]}" "0"
-	# get_tasks already checks for change so don't use try_update
-#	update_information "0" "$(get_tasks)"
+	try_update "$(./test_lb.sh)" "{information[0]}" "0"
 	update_bar
 	sleep "$slp"
 }
