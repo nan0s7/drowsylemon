@@ -2,10 +2,14 @@
 
 active_win="$(pfw)"
 if [ "$active_win" != "$old_active_win" ]; then
+	# [0]=task bar length in characters
+	# [1]=active window background colour
+	# [2]=offset for any customisations aesthetically in characters
+	declare -a consts=( "100" "%{B#545454}" "0" )
+	# Initialisations
 	declare -a task_hexs=()
 	declare -a task_wins=()
 	declare -a task_desk=()
-	declare -a consts=( "100" "%{B#545454}" "0" )
 	win_list="$(wmctrl -l)"
 	win_list="${win_list//$(uname -n)/}"
 	old_active_win="$active_win"
@@ -46,6 +50,9 @@ if [ "$active_win" != "$old_active_win" ]; then
 				for i in `seq 0 $spacer_len`; do
 					spacer+=" "
 				done
+				# Feel free to change any following additions to the tasks variable
+				# win_i is the current window name (what will show in the task bar)
+				# hex_i is the current window's hex value
 				if [ "$active_win" = "$hex_i" ]; then
 					tasks+=" ${consts[1]}"
 					tasks+="$win_i$spacer%{B-}"
