@@ -99,13 +99,13 @@ init_values() {
 	get_seconds_offset
 
 	# these are and are in display order (not needed)
-	information+=( "$(./test_lb.sh)" )
+	information+=( "$(./get_tasks.sh)" )
 	information+=( "$(get_date)" )
 	information+=( "$(get_battery)" )
 }
 
 run_min_cmds() {
-	try_update "$(./test_lb.sh)" "{information[0]}" "0"
+	try_update "$(./get_tasks.sh)" "{information[0]}" "0"
 	update_bar
 	sleep "$slp"
 }
