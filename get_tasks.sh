@@ -2,9 +2,9 @@
 
 active_win="$(pfw)"
 if [ "$active_win" != "$old_active_win" ]; then
-	# [0]=task bar length in characters
-	# [1]=active window background colour
-	# [2]=offset for any customisations aesthetically in characters
+	# [0]=task bar length in characters (default=100)
+	# [1]=active window background colour (%{B#545454})
+	# [2]=offset for any customisations aesthetically in characters (0)
 	declare -a consts=( "100" "%{B#545454}" "0" )
 	# Initialisations
 	declare -a task_hexs=()
