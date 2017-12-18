@@ -89,7 +89,7 @@ init_values() {
 	# second offsets isn't to be displayed on panel
 	get_seconds_offset
 
-	# these are and are in display order (not needed)
+	# these are in display order (not needed, just easier to remember)
 	information+=( "$(./get_tasks.sh)" )
 	information+=( "$(get_date)" )
 	information+=( "$(get_battery)" )
