@@ -8,7 +8,8 @@ I'm constantly working on ways to make this more efficient without needing to re
 The Bash and Python versions are not always equal in features and functionality. Usually the one with the most recent commit is the one most up-to-date but again that's not guaranteed. If you're unsure, check the output string to see if they're similar (my aim is to make them look the same when being used).
 
 ## Plugins
-I have seperated the get_tasks command/function so that it can be easily used in someone elses own LemonBar script or config. It will echo the structured string so if you want that to go into a variable, just call it by `$(./get_tasks.sh)`. Uses the two commands `wmctrl` and `pfw` (from wmutils).
+~I have seperated the get_tasks command/function so that it can be easily used in someone elses own LemonBar script or config. It will echo the structured string so if you want that to go into a variable, just call it by `$(./get_tasks.sh)`. Uses the two commands `wmctrl` and `pfw` (from wmutils).~
+Under construction. Right now using `source <script>` then just use function from <script> inside `lb.sh`.
 
 ## Dependencies
 **Bash version:**
