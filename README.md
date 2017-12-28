@@ -13,7 +13,11 @@ Under construction. Right now using `source <script>` then just use function fro
 
 ## Dependencies
 **Bash version:**
-- some packages (to be ammended at a later date)
+- coreutils
+- wmutils
+- wmctrl
+
+- Please note that the get_desktop and get_tasks plugins need the get_info plugin.
 
 uses the commands: wmctrl, ~xdotools~, ~xprop~, ~ps~, ~wc~, uname, acpi (T), date, pfw, ~wattr~, ~lsw~
 
