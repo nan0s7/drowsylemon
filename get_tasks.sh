@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This plugin depends on my get_info plugin
+
 max_length="70"
 format_len="0"
 
