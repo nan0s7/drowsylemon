@@ -1,5 +1,15 @@
 #!/bin/bash
 
+IFS=$'\n'
+cdesk=""
+active_win=""
+update_tasks="0" # only used by get_task
+old_active_win=""
+declare -a task_hexs=()
+declare -a task_wins=()
+declare -a task_desk=()
+declare -a count=( "0" "0" "0" "0" "0" "0" "0" "0" "0" )
+
 update_information() {
 	active_win="$(pfw)"
 	if [ "$active_win" != "$old_active_win" ]; then
@@ -10,10 +20,10 @@ update_information() {
 			cdesk="${cdesk: -1}"
 		else
 			# Initialisations
-			declare -a task_hexs=()
-			declare -a task_wins=()
-			declare -a task_desk=()
-			declare -a count=( "0" "0" "0" "0" "0" "0" "0" "0" "0" )
+			task_hexs=()
+			task_wins=()
+			task_desk=()
+			count=( "0" "0" "0" "0" "0" "0" "0" "0" "0" )
 			win_list="$(wmctrl -l)"
 			win_list="${win_list//$(uname -n)/}"
 			old_active_win="$active_win"
