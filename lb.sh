@@ -58,7 +58,7 @@ sync_time_update() {
 
 update_bar() {
 	if [ "$update_now" -eq "1" ]; then
-		echo "%{l} ${info[3]}${info[0]}%{c}${info[1]}%{r}${info[2]} "
+		echo "%{l} ${info[3]} ${info[0]}%{c}${info[1]}%{r}${info[2]} "
 		update_now="0"
 	fi
 }
@@ -80,8 +80,6 @@ try_update() {
 }
 
 init_values() {
-	IFS=$'\n'
-
 	# second offsets isn't to be displayed on panel
 	get_seconds_offset
 	update_information
@@ -94,31 +92,12 @@ init_values() {
 
 run_sec_cmds() {
 	# Checks if the information is stale before updating
-#	try_update "$(./get_tasks.sh)" "{info[0]}" "0"
 	update_information
 	try_update "$(format_tasks_string)" "${info[0]}" "0"
 	try_update "$(update_desktop)" "${info[3]}" "3"
 	update_bar
 	sleep "$slp"
 }
-
-max_length="100"
-icon_empty="o"
-icon_used="x"
-format_len="0"
-fcol="ffffff"
-bcol="000000"
-desk_range="8"
-#task_len="100"
-update_tasks="0"
-old_active_win=""
-declare -a count=( "0" "0" "0" "0" "0" "0" "0" "0" "0" )
-active_win=""
-win_list=""
-declare -a task_hexs=()
-declare -a task_wins=()
-declare -a task_desk=()
-cdesk=""
 
 main() {
 	source get_info.sh
