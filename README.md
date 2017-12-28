@@ -5,11 +5,10 @@ What that means is that Drowsy lemonbar only updates when it needs to. It is als
 
 I'm constantly working on ways to make this more efficient without needing to reduce the usability drastically.
 
-The Bash and Python versions are not always equal in features and functionality. Usually the one with the most recent commit is the one most up-to-date but again that's not guaranteed. If you're unsure, check the output string to see if they're similar (my aim is to make them look the same when being used).
+I would recommend to use the Bash version as the Python 3 version is more for experimentation, and is not as well optimised and updated.
 
 ## Plugins
-~I have seperated the get_tasks command/function so that it can be easily used in someone elses own LemonBar script or config. It will echo the structured string so if you want that to go into a variable, just call it by `$(./get_tasks.sh)`. Uses the two commands `wmctrl` and `pfw` (from wmutils).~
-Under construction. Right now using `source <script>` then just use function from <script> inside `lb.sh`.
+Under construction. Right now you can add a plugin by using `source <script>` then just use the function from `<script>` inside `lb.sh`. If it adds something to the bar to be displayed, add it to the _info_ array in the **init_vals** function and add the function using the `try_update` function in the main loop (if you want it to update each second add it to the `run_sec_cmds` function).
 
 ## Dependencies
 **Bash version:**
@@ -17,11 +16,7 @@ Under construction. Right now using `source <script>` then just use function fro
 - wmutils
 - wmctrl
 
-Please note that the get_desktop and get_tasks plugins need the get_info plugin.
-
-uses the commands: wmctrl, ~xdotools~, ~xprop~, ~ps~, ~wc~, uname, acpi (T), date, pfw, ~wattr~, ~lsw~
-
-the (T) means the command may be replaced on a later date
+Please note that the get_desktop and get_tasks plugins need the get_info plugin in order to work.
 
 **Python version:**
 - python3
@@ -30,29 +25,41 @@ the (T) means the command may be replaced on a later date
 
 ## Display
 So far the bar displays;
-- current desktop number
-- currently focused window
+- current desktop & whether a desktop has an active window in it
+- currently focused window & other windows on the current desktop
 - date and time
 - battery information
-- open windows
 
 This information is just what I've found somewhat useful so far, and can easily be modified.
 
 ## Usage
-You may have to extend the clickable areas when you run lemonbar in the folliwing pipelines. I have mine currently set to 20 areas but your usage may vary.
-Change `lemonbar` to `lemonbar -a 20` in the following examples. The default value is 10.
+You may have to extend the clickable areas when you run lemonbar in the folliwing pipelines; the default is 10, so if you have more than 10 (or expect more than 10) just add in the extra parameter below. I have mine currently set to 20 areas but your usage may vary.
+Change `lemonbar` to `lemonbar -a 20` in the following examples.
 
 
-Simply execute the script and pipe it into _lemonbar_, making sure to use the `-p` option.
+Simply execute the script and pipe it into _lemonbar_.
 
-For example: `./lb.sh | lemonbar`
-You will need to pipe that to another program for the task manager actions to work:
+For example: 
+
+`./lb.sh | lemonbar`
+
+You will need to pipe that to another program for the mouse-click actions to work:
+
 `./lb.sh | lemonbar | sh`
 
 
-A similar method is used for the Python version: `python3 pydlb.py | lemonbar`
+A similar method is used for the Python version:
+
+`python3 pydlb.py | lemonbar`
 
 For the task-manager plugin to work you need to pipe the output into sh as follows:
+
 `python3 pydlb.py | lemonbar | sh`
 
+
 Please keep in mind that this is for my personal use at the moment, and I will change things and break things often as I see fit whilst I experiment. Additionally, in its unreleased state, things will be re-arranged and added/removed quite frequently.
+
+
+# TODO
+- Add clickable areas by default
+- Make customisation easier/simpler to do
