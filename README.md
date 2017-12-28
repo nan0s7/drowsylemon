@@ -8,7 +8,9 @@ I'm constantly working on ways to make this more efficient without needing to re
 I would recommend to use the Bash version as the Python 3 version is more for experimentation, and is not as well optimised and updated.
 
 ## Plugins
-Under construction. Right now you can add a plugin by using `source <script>` then just use the function from `<script>` inside `lb.sh`. If it adds something to the bar to be displayed, add it to the _info_ array in the **init_vals** function and add the function using the `try_update` function in the main loop (if you want it to update each second add it to the `run_sec_cmds` function).
+Under construction. Right now you can add a plugin by using `source <script>` then just use the function from `<script>` inside `lb.sh`. 
+
+If it adds something to the bar to be displayed, add it to the _info_ array in the `init_vals` function and add the function using `try_update` in the main loop (or if you want it to update each second add it to the `run_sec_cmds` function).
 
 ## Dependencies
 **Bash version:**
