@@ -5,6 +5,8 @@ What that means is that Drowsy lemonbar only updates when it needs to. It is als
 
 I'm constantly working on ways to make this more efficient without needing to reduce the usability drastically.
 
+For example; my script only updates the time once per minute, and every few minutes it makes sure to sync the time it checks for a new time with when the new minute starts. This ensures the time updates use as little power as possible while keeping the displayed time reliable and accurate to a few seconds.
+
 I would recommend to use the Bash version as the Python 3 version is more for experimentation, and is not as well optimised and updated.
 
 ## Plugins
@@ -65,3 +67,4 @@ Please keep in mind that this is for my personal use at the moment, and I will c
 # TODO
 - Add clickable areas by default
 - Make customisation easier/simpler to do
+- Remove `acpi` command
