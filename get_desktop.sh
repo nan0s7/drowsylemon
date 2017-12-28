@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This plugin depends on my get_info plugin
+icon_used="x"
+icon_empty="o"
+desk_range="8"
+
 update_desktop() {
 	result=""
 	# expand used_desks
