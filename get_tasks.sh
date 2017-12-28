@@ -1,5 +1,8 @@
 #!/bin/bash
 
+max_length="70"
+format_len="0"
+
 format_tasks_string() {
 	if [ "$update_tasks" -eq "1" ]; then
 		tasks_string=""
@@ -24,14 +27,13 @@ format_tasks_string() {
 					# win_i is the current window name (what will show in the task bar)
 					# hex_i is the current window's hex value
 					if [ "$active_win" = "$hex_i" ]; then
-						tasks_string+="%{R}$win_i$spacer%{R}"
+						tasks_string+="%{R} $win_i$spacer%{R}"
 					else
 						tasks_string+=" $win_i$spacer"
 					fi
 				else
 					if [ "$active_win" = "$hex_i" ]; then
-						tasks_string+=" ${consts[1]}"
-						tasks_string+="${win_i:0:$win_len}$spacer%"
+						tasks_string+="%{R} ${win_i:0:$win_len}$spacer%{R}"
 					else
 						tasks_string+=" ${win_i:0:$win_len}"
 					fi
