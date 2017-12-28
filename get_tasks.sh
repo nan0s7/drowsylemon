@@ -3,7 +3,7 @@
 # This plugin depends on my get_info plugin
 
 max_length="70"
-format_len="0"
+format_len="1"
 
 format_tasks_string() {
 	if [ "$update_tasks" -eq "1" ]; then
