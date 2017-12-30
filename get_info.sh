@@ -13,7 +13,6 @@ declare -a count=( "0" "0" "0" "0" "0" "0" "0" "0" "0" )
 update_information() {
 	active_win="$(pfw)"
 	if [ "$active_win" != "$old_active_win" ]; then
-		update_tasks="1"
 		# Assumes the only updates will occur if the focused window changes
 		# this assumption saves a little bit of computation in the long run
 		# Initialisations
@@ -36,22 +35,15 @@ update_information() {
 			task_desk+=( "$win_desk" )
 			task_wins+=( "${win_name:2}" )
 		done
-		if [ "$active_win" = "0x000000d7" ]; then
+		if [ "$active_win" = "0x000000d7" ] || [ "$active_win" = "0x0" ]; then
 			cdesk="$(wmctrl -d)"
 			cdesk="${cdesk%*  \* *}"
 			cdesk="${cdesk: -1}"
 			old_active_win=""
+			tasks_string=""
 		else
 			old_active_win="$active_win"
+			update_tasks="1"
 		fi
-		# condense count, fix this for >9 desktops later
-		used_desks=""
-		for i in `seq 0 $desk_range`; do
-			if [ "${count[$i]}" -gt "0" ]; then
-				used_desks+="1"
-			else
-				used_desks+="0"
-			fi
-		done
 	fi
 }
