@@ -10,7 +10,7 @@ update_desktop() {
 	result=""
 	# expand used_desks
 	for i in `seq 0 $desk_range`; do
-		if [ "${used_desks:$i:1}" -eq "1" ]; then
+		if [ "${count[$i]}" -gt "0" ]; then
 			icon="$icon_used"
 		else
 			icon="$icon_empty"
