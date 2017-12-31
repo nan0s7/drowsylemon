@@ -4,6 +4,7 @@
 
 icon_used="x"
 icon_empty="o"
+# desk_range is the number of desktops you have, minus one
 desk_range="8"
 
 update_desktop() {

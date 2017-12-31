@@ -100,6 +100,7 @@ run_sec_cmds() {
 }
 
 main() {
+	# Import all needed variables and functions from plugins
 	source get_info.sh
 	source get_tasks.sh
 	source get_desktop.sh
