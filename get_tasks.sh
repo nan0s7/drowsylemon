@@ -19,26 +19,23 @@ format_tasks_string() {
 			win_i="${task_wins[$i]}"
 			if [ "${task_desk[$i]}" = "$cdesk" ]; then
 				name_len="$[ ${#win_i} + $format_len ]"
+				spacer=""
 				if [ "$name_len" -lt "$win_len" ]; then
-					spacer=""
 					spacer_len="$[ $win_len - $name_len - $format_len ]"
 					for i in `seq 0 $spacer_len`; do
 						spacer+=" "
 					done
-					# Feel free to change any following additions to the tasks_string variable
-					# win_i is the current window name (what will show in the task bar)
-					# hex_i is the current window's hex value
-					if [ "$active_win" = "$hex_i" ]; then
-						tasks_string+="%{R} $win_i$spacer%{R}"
-					else
-						tasks_string+=" $win_i$spacer"
-					fi
+				fi
+
+				# Feel free to change any following additions to the tasks_string variable
+				# win_i is the current window name (what will show in the task bar)
+				# hex_i is the current window's hex value
+				tmp="${win_i:0:$win_len}$spacer"
+
+				if [ "$active_win" = "$hex_i" ]; then
+					tasks_string+="%{R} $tmp%{R}"
 				else
-					if [ "$active_win" = "$hex_i" ]; then
-						tasks_string+="%{R} ${win_i:0:$win_len}$spacer%{R}"
-					else
-						tasks_string+=" ${win_i:0:$win_len}"
-					fi
+					tasks_string+=" $tmp"
 				fi
 			fi
 		done
