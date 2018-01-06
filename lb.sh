@@ -2,14 +2,10 @@
 
 # How long to sleep for
 slp="1"
-# How many seconds in a minute minus one
-time_scale="59"
 
 # Variable initialisation
-offset="0"
 update_now="1"
 declare -a info=()
-minute_scaled="$[ $time_scale / $slp ]"
 
 finish() {
 	unset per
@@ -26,34 +22,6 @@ trap finish EXIT
 get_battery() {
 	# This command will change in the future
     echo "$(acpi --battery | cut -d, -f2)"
-}
-
-get_date() {
-	echo "$(date '+%a %b %d, %H:%M')"
-}
-
-get_seconds_offset() {
-	offset="$(date '+%S')"
-	if [ "${offset:0:1}" = "0" ]; then
-		offset="${offset:1}"
-	fi
-	offset="$[ $time_scale - $offset ]"
-	offset="$[ $offset / $slp ]"
-}
-
-sync_time_update() {
-	tmp="$(date '+%S')"
-	if [ "${tmp:0:1}" = "0" ]; then
-		tmp="${tmp:1}"
-	fi
-	if [ "$tmp" -gt "5" ]; then
-		minute_scaled="$[ $time_scale - $tmp + 2 ]"
-		minute_scaled="$[ $minute_scaled / $slp ]"
-	elif [ "$tmp" -gt "2" ]; then
-		minute_scaled="$[ $minute_scaled - 1 ]"
-	else
-		minute_scaled="$[ $time_scale / $slp ]"
-	fi
 }
 
 update_bar() {
@@ -80,8 +48,7 @@ try_update() {
 }
 
 init_values() {
-	# second offsets isn't to be displayed on panel
-	get_seconds_offset
+	# second offsets isn't to be displayed on panel	get_seconds_offset
 	update_information
 
 	info+=( "$(format_tasks_string)" )
@@ -104,6 +71,7 @@ main() {
 	source plugins/get_info.sh
 	source plugins/get_tasks.sh
 	source plugins/get_desktop.sh
+	source plugins/get_time.sh
 
 	init_values
 
