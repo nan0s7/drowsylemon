@@ -35,7 +35,7 @@ update_information() {
 			task_desk+=( "$win_desk" )
 			task_wins+=( "${win_name:2}" )
 		done
-		if [ "$active_win" = "0x000000d7" ] || [ "$active_win" = "0x0" ]; then
+		if [ "${active_win:0:7}" = "0x00000" ]; then
 			cdesk="$(wmctrl -d)"
 			cdesk="${cdesk%*  \* *}"
 			cdesk="${cdesk: -1}"
