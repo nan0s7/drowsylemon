@@ -7,20 +7,23 @@ icon_empty="o"
 # desk_range is the number of desktops you have, minus one
 desk_range="8"
 
+insert_icon() {
+	if [ "${count[$1]}" -gt "0" ]; then
+		echo "$icon_used"
+	else
+		echo "$icon_empty"
+	fi
+}
+
 update_desktop() {
-	result=""
+	desktop_string=""
 	# expand used_desks
-	for i in `seq 0 $desk_range`; do
-		if [ "${count[$i]}" -gt "0" ]; then
-			icon="$icon_used"
-		else
-			icon="$icon_empty"
-		fi
-		if [ "$i" -eq "$cdesk" ]; then
-			desktop_string+="%{R} $icon %{R}"
-		else
-			desktop_string+=" $icon "
-		fi
+	for i in `seq 0 $[ $cdesk - 1 ]`; do
+		desktop_string+=" $(insert_icon $i) "
+	done
+	desktop_string+="%{R} $(insert_icon $cdesk) %{R}"
+	for i in `seq $[ $cdesk + 1 ] $desk_range`; do
+		desktop_string+=" $(insert_icon $i) "
 	done
 	echo -e "$desktop_string"
 }
