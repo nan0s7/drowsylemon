@@ -2,22 +2,20 @@
 
 # This plugin depends on my get_info plugin
 
-icon_used="x"
-icon_empty="o"
 # desk_range is the number of desktops you have, minus one
 desk_range="8"
 
 insert_icon() {
 	if [ "${count[$1]}" -gt "0" ]; then
-		echo "$icon_used"
+		# Icon used to indicate open windows
+		echo "x"
 	else
-		echo "$icon_empty"
+		# Icon for an empty desktop
+		echo "o"
 	fi
 }
 
 update_desktop() {
-	desktop_string=""
-	# expand used_desks
 	for i in `seq 0 $[ $cdesk - 1 ]`; do
 		desktop_string+=" $(insert_icon $i) "
 	done
