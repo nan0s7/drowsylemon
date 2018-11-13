@@ -5,10 +5,10 @@ time_scale="59"
 
 # Variable initialisation
 offset="0"
-minute_scaled="$[ $time_scale / $slp ]"
+minute_scaled="$((time_scale / slp))"
 
 get_date() {
-	echo "$(date '+%a %b %d, %H:%M')"
+	date_cmd="$(date '+%a %b %d, %H:%M')"
 }
 
 get_seconds_offset() {
@@ -16,8 +16,8 @@ get_seconds_offset() {
 	if [ "${offset:0:1}" = "0" ]; then
 		offset="${offset:1}"
 	fi
-	offset="$[ $time_scale - $offset ]"
-	offset="$[ $offset / $slp ]"
+	offset="$((time_scale - offset))"
+	offset="$((offset / slp))"
 }
 
 sync_time_update() {
@@ -26,11 +26,11 @@ sync_time_update() {
 		tmp="${tmp:1}"
 	fi
 	if [ "$tmp" -gt "5" ]; then
-		minute_scaled="$[ $time_scale - $tmp + 2 ]"
-		minute_scaled="$[ $minute_scaled / $slp ]"
+		minute_scaled="$((time_scale - tmp + 2))"
+		minute_scaled="$((minute_scaled / slp))"
 	elif [ "$tmp" -gt "2" ]; then
-		minute_scaled="$[ $minute_scaled - 1 ]"
+		minute_scaled="$((minute_scaled - 1))"
 	else
-		minute_scaled="$[ $time_scale / $slp ]"
+		minute_scaled="$((time_scale / slp))"
 	fi
 }

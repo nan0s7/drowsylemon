@@ -15,7 +15,6 @@ update_information() {
 	if [ "$active_win" != "$old_active_win" ]; then
 		# Assumes the only updates will occur if the focused window changes
 		# this assumption saves a little bit of computation in the long run
-		# Initialisations
 		task_hexs=()
 		task_wins=()
 		task_desk=()
@@ -26,7 +25,7 @@ update_information() {
 			tmp="${line:0:10}"
 			line="${line:12}"
 			win_desk="${line%% *}"
-			count["$win_desk"]="$[ ${count[$win_desk]} + 1 ]"
+			count["$win_desk"]="$((${count[$win_desk]} + 1))"
 			task_hexs+=( "$tmp" )
 			win_name="${line#$win_desk*}"
 			if [ "$tmp" = "$active_win" ]; then

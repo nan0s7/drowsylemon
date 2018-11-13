@@ -10,19 +10,19 @@ format_tasks_string() {
 		tasks_string=""
 		win_len="${count[$cdesk]}"
 		if [ "$win_len" -gt "0" ]; then
-			win_len="$[ $max_length / $win_len ]"
+			win_len="$((max_length / win_len))"
 		else
 			win_len="0"
 		fi
-		for i in `seq 0 ${#task_hexs[@]}`; do
+		for i in $(seq 0 ${#task_hexs[@]}); do
 			hex_i="${task_hexs[$i]}"
 			win_i="${task_wins[$i]}"
 			if [ "${task_desk[$i]}" = "$cdesk" ]; then
-				name_len="$[ ${#win_i} + $format_len ]"
+				name_len="$((${#win_i} + format_len))"
 				spacer=""
 				if [ "$name_len" -lt "$win_len" ]; then
-					spacer_len="$[ $win_len - $name_len - $format_len ]"
-					for i in `seq 0 $spacer_len`; do
+					spacer_len="$((win_len - name_len - format_len))"
+					for i in $(seq 0 $spacer_len); do
 						spacer+=" "
 					done
 				fi
@@ -39,7 +39,7 @@ format_tasks_string() {
 				fi
 			fi
 		done
-		echo "$tasks_string"
+#		echo "$tasks_string"
 		update_tasks="0"
 	fi
 }
