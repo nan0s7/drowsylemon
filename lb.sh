@@ -13,63 +13,38 @@ source plugins/get_desktop.sh
 
 # Variable initialisation
 update_now="1"
-declare -a info=()
-u=""
 
 update_battery() {
 	# This command will change in the future
-    battery="$(acpi --battery | cut -d, -f2)"
+	prf "$(acpi --battery | cut -d, -f2)"
 }
 
 update_bar() {
 	if [ "$update_now" -eq "1" ]; then
-#		prf "%{l} ${info[3]} ${info[0]}%{c}${info[1]}%{r}${info[2]} "
 		prf "%{l} $desks $tasks%{c}$dates%{r}$batts "
 		update_now="0"
 	fi
 }
 
-try_update() {
-	old="$1"
-#	arr_pos="$2"
-#	if [ "$tmp" != "${info[$arr_pos]}" ]; then
-	if [ "$old" != "$u" ]; then
-#		info["$arr_pos"]="$tmp"
-		update_now="1"
-	fi
-}
-
 init_values() {
 	update_information
-	format_tasks_string
-	tasks="$tasks_string"
-	update_desktop
-	desks="$desktop_string"
-	update_battery
-	batts="$battery"
-	get_date
-	dates="$date_cmd"
-
-#	info+=( "$tasks_string" )
-#	info+=( "$(get_date)" )
-#	info+=( "$battery" )
-#	info+=( "$desktop_string" )
+	tasks="$(format_tasks_string)"
+	desks="$(update_desktop)"
+#	batts="$(update_battery)"
+	dates="$(get_date)"
 }
 
 run_sec_cmds() {
 	update_information
 	# Checks if the information is stale before updating
-	format_tasks_string
-#	try_update "$tasks_string" 0
-#	try_update "$(update_desktop)" "3" "${info[3]}"
-	if [ "tasks" != "$tasks_string" ]; then
-		tasks="$tasks_string"
+	tmp="$(format_tasks_string)"
+	if [ "$tasks" != "$tmp" ]; then
+		tasks="$tmp"
 		update_now="1"
 	fi
-	update_desktop
-#	try_update "$desktop_string" 3
-	if [ "desks" != "$desktop_string" ]; then
-		desks="$desktop_string"
+	tmp="$(update_desktop)"
+	if [ "$desks" != "$tmp" ]; then
+		desks="$tmp"
 		update_now="1"
 	fi
 	update_bar
@@ -91,19 +66,13 @@ main() {
 
 	while true; do
 		for i in $(seq 0 4); do
-			# Doesn't bother checking if the command gave a new value
-#			info[1]="$(get_date)"
-			get_date
-			dates="$date_cmd"
-			# Essentially forces an update
+			dates="$(get_date)"
 			update_now="1"
 			for j in $(seq 0 $minute_scaled); do
 				run_sec_cmds
 			done
 		done
-		update_battery
-#		info[2]="$battery"
-		batts="$battery"
+#		batts="$(update_battery)"
 		sync_time_update
 	done
 }
