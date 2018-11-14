@@ -6,10 +6,10 @@ prf() { printf %s\\n "$*" ; }
 slp="1"
 
 # Import all needed variables and functions from plugins
-source plugins/get_info.sh
-source plugins/get_time.sh
-source plugins/get_tasks.sh
-source plugins/get_desktop.sh
+source plugins/get_info
+source plugins/get_time
+source plugins/get_tasks
+source plugins/get_desktop
 
 # Variable initialisation
 update_now="1"
