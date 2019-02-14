@@ -1,0 +1,26 @@
+#!/bin/sh
+
+prf() { printf %s\\n "$*" ; }
+
+# Import all needed variables and functions from plugins
+source $PWD/config
+source $PWD/plugins/get_time
+source $PWD/plugins/get_battery
+
+initialise
+
+# Align when script checks for the current time to be accurate
+update_bar
+sleep "$(get_seconds_offset)"
+
+# Adjusts for computation time
+sync_time_update
+
+while true; do
+	for i in $(seq 0 4); do
+		each_min
+		update_bar
+		sleep "$m_scale"
+	done
+	each_5min
+done
