@@ -1,34 +1,27 @@
 # How many seconds in a minute minus one
-time_scale="59"
-
-# Variable initialisation
-offset="0"
-minute_scaled="$((time_scale/slp))"
-
-get_date() {
-	prf "$(date '+%a %b %d, %H:%M')"
-}
+t_scale="60"
+s_scale="1"
+m_scale="$((t_scale/s_scale))"
 
 get_seconds_offset() {
-	offset="$(date '+%S')"
-	if [ "${offset:0:1}" = "0" ]; then
-		offset="${offset:1}"
-	fi
-	offset="$((time_scale-offset))"
-	offset="$((offset/slp))"
+	a=$(date +%S)
+#	if [ "${a:0:1}" = "0" ]; then
+#		a="${a:1}"
+#	fi
+	a="$((t_scale-a))"
+	prf "$(((a/s_scale)+2))"
 }
 
 sync_time_update() {
-	tmp="$(date '+%S')"
-	if [ "${tmp:0:1}" = "0" ]; then
-		tmp="${tmp:1}"
-	fi
-	if [ "$tmp" -gt "5" ]; then
-		minute_scaled="$((time_scale-tmp+2))"
-		minute_scaled="$((minute_scaled/slp))"
-	elif [ "$tmp" -gt "2" ]; then
-		minute_scaled="$((minute_scaled-1))"
+	a=$(date +%S)
+#	if [ "${a:0:1}" = "0" ]; then
+#		a="${a:1}"
+#	fi
+	if [ "$a" -gt "5" ]; then
+		m_scale="$(((t_scale-a+2)/s_scale))"
+	elif [ "$a" -gt "2" ]; then
+		m_scale="$((m_scale-1))"
 	else
-		minute_scaled="$((time_scale/slp))"
+		m_scale="$((t_scale/s_scale))"
 	fi
 }
