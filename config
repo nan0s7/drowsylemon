@@ -1,0 +1,45 @@
+upd_dl_time() {
+	dl_time="$c_date$c_min"
+}
+
+upd_date() {
+	c_date="$(date '+%a %b %d, %H:')"
+	c_min="00"
+	upd_dl_time
+}
+
+incr_min() {
+	c_min=$((c_min+1))
+	if [ "$c_min" -gt "9" ]; then
+		upd_dl_time
+	else
+		dl_time="$c_date""0$c_min"
+	fi		
+}
+
+each_min() {
+	if [ "$c_min" -lt "59" ]; then
+		incr_min
+	else
+		upd_date
+	fi
+}
+
+each_5min() {
+	dl_bat=$(calculate_charge)
+	c_date="$(date '+%a %b %d, %H:')"
+	c_min="$(date +%M)"
+	upd_dl_time
+	sync_time_update
+}
+
+initialise() {
+	dl_bat=$(calculate_charge)
+	c_date="$(date '+%a %b %d, %H:')"
+	c_min="$(date +%M)"
+	upd_dl_time
+}
+
+update_bar() {
+	prf "%{c}$dl_time %{r}$dl_bat "
+}
