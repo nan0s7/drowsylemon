@@ -1,7 +1,7 @@
 # drowsylemon
 A lazy/battery efficient Bash script for managing _lemonbar_.
 
-What that means is that Drowsy lemonbar only updates when it needs to. It is also easy to seperate commands so that they update at different periods, delaying the battery hungry ones as long as possible.
+What that means is that Drowsy-lemonbar only updates when it needs to. It is also easy to seperate commands so that they update at different periods, delaying the battery hungry ones as long as possible.
 
 I'm constantly working on ways to make this more efficient without needing to reduce the usability drastically.
 
@@ -10,9 +10,13 @@ For example; my script only updates the time once per minute, and every few minu
 I would recommend to use the Bash version as the Python 3 version is more for experimentation, and is not as well optimised and updated.
 
 ## Plugins
-Under construction. Right now you can add a plugin by using `source <script>` then just use the function from `<script>` inside `lb.sh`. 
+Under construction. Right now you can add a plugin by using `source <script>` then just use the function from `<script>` inside `drowsylemon`. 
 
 If it adds something to the bar to be displayed, add it to the _info_ array in the `init_vals` function and add the function using `try_update` in the main loop (or if you want it to update each second add it to the `run_sec_cmds` function).
+
+**Currently reworking a lot of the plugins; so right now the time and battery percentage work as 
+expected. I'm also working on the config file for this script to make things a little easier 
+to edit, as well as hopefully making it clearer on how things work.**
 
 ## Dependencies
 **Bash version:**
@@ -45,11 +49,11 @@ Simply execute the script and pipe it into _lemonbar_.
 
 For example: 
 
-`./lb.sh | lemonbar`
+`./drowsylemon | lemonbar`
 
 You will need to pipe that to another program for the mouse-click actions to work:
 
-`./lb.sh | lemonbar | sh`
+`./drowsylemon | lemonbar | sh`
 
 
 A similar method is used for the Python version:
