@@ -7,20 +7,20 @@ source $PWD/config
 source $PWD/plugins/get_time
 source $PWD/plugins/get_battery
 
-initialise
+init
 
 # Align when script checks for the current time to be accurate
-update_bar
-sleep "$(get_seconds_offset)"
+upbar
+sleep "$(goffset)"
 
 # Adjusts for computation time
-sync_time_update
+synct
 
 while true; do
 	for i in $(seq 0 4); do
-		each_min
-		update_bar
-		sleep "$m_scale"
+		min1
+		upbar
+		sleep "$ms"
 	done
-	each_5min
+	min5
 done
