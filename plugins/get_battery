@@ -1,7 +1,7 @@
 p="/sys/bus/acpi/devices/ACPI0002:00/power_supply/BAT0/"
 
-calculate_charge() {
-	full=$(cat "$p/charge_full")
-	now=$(cat "$p/charge_now")
-	prf "$((now/$((full/100))))"
+calcb() {
+	mc=$(cat "$p/charge_full")
+	cc=$(cat "$p/charge_now")
+	prf "$((cc/$((mc/100))))"
 }
