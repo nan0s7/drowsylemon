@@ -1,27 +1,20 @@
-# How many seconds in a minute minus one
-t_scale="60"
-s_scale="1"
-m_scale="$((t_scale/s_scale))"
+ts="60"
+ss="1"
+ims="$((ts/ss))"; ms="$ims"
 
-get_seconds_offset() {
+goffset() {
 	a=$(date +%S)
-#	if [ "${a:0:1}" = "0" ]; then
-#		a="${a:1}"
-#	fi
-	a="$((t_scale-a))"
-	prf "$(((a/s_scale)+2))"
+	a="$((ts-a))"
+	prf "$(((a/ss)+2))"
 }
 
-sync_time_update() {
+synct() {
 	a=$(date +%S)
-#	if [ "${a:0:1}" = "0" ]; then
-#		a="${a:1}"
-#	fi
-	if [ "$a" -gt "5" ]; then
-		m_scale="$(((t_scale-a+2)/s_scale))"
-	elif [ "$a" -gt "2" ]; then
-		m_scale="$((m_scale-1))"
+	if [ "$a" -le "2" ]; then
+		ms="$ims"
+	elif [ "$a" -gt "5" ]; then
+		ms="$(((ts-a+2)/ss))"
 	else
-		m_scale="$((t_scale/s_scale))"
+		ms="$((ms-1))"
 	fi
 }
