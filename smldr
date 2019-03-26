@@ -1,19 +1,18 @@
 #!/bin/sh
-m(){ j=$(date +%-M);}
 u(){ printf %s\\n "%{c}$(date '+%a %b %d, %H:')$p$j";}
-m;if [ "$j" -gt 9 ];then
-k=$((j+10-j%10));p=""
-else
-k=$((10-j));p=0
-fi
+j=$(date +%-M) p="0";if [ $j -gt 9 ];then p="";fi
 u;sleep $((60-$(date +%-S)+1))
+p="0";while [ $j -lt 8 ];do
+j=$((j+1)) u;sleep 60
+done
+p="";while [ $j -lt 58 ];do
+j=$((j+1)) u;sleep 60
+done;j=0
 while true;do
-j=$((j+1))
-if [ "$j" -ge "$k" ];then
-m;if [ "$j" -gt 9 ];then
-p=""
-else
-p=0
-fi
-k=$((j+10-j%10));fi
-u;sleep 60;done
+p="0";while [ $j -lt 8 ];do
+j=$((j+1)) u;sleep 60
+done
+p="";while [ $j -lt 58 ];do
+j=$((j+1)) u;sleep 60
+done;j=$(date +%-M)
+done
