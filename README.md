@@ -1,4 +1,6 @@
 # drowsylemon
+**Note:** With my adventures with the `smldr` (small drowsylemon) variant, which only displays the current time and date, I haven't updated the main `drowsylemon` script in a while. `smldr` is a POSIX compliant script that shows the time accurate to about 5 seconds, while being super efficient. If a time display is all you need, then I would recommend using this.
+
 A lazy/battery efficient Bash script for managing _lemonbar_.
 
 What that means is that Drowsy-lemonbar only updates when it needs to. It is also easy to seperate commands so that they update at different periods, delaying the battery hungry ones as long as possible.
@@ -6,8 +8,6 @@ What that means is that Drowsy-lemonbar only updates when it needs to. It is als
 I'm constantly working on ways to make this more efficient without needing to reduce the usability drastically.
 
 For example; my script only updates the time once per minute, and every few minutes it makes sure to sync when it checks for a new time with when the new minute starts. This ensures the time updates use as little power as possible while keeping the displayed time reliable and accurate to a few seconds.
-
-I would recommend to use the Bash version as the Python 3 version is more for experimentation, and is not as well optimised and updated.
 
 ## Plugins
 Under construction. Right now you can add a plugin by using `source <script>` then just use the function from `<script>` inside `drowsylemon`. 
@@ -25,11 +25,6 @@ to edit, as well as hopefully making it clearer on how things work.**
 - wmctrl
 
 Please note that the get_desktop and get_tasks plugins need the get_info plugin in order to work.
-
-**Python version:**
-- python3
-- modules: subprocess, time
-- everything the Bash version needs
 
 ## Display
 So far the bar displays;
