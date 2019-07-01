@@ -1,10 +1,25 @@
 #!/bin/sh
-d=$(date '+%a %b %d, %H:') j=$(date +%-M) p="0"
-if [ "$j" -gt 9 ];then p="";fi
-printf %s\\n "%{c}$d$p$j";sleep $((61-$(date +%-S)))
-while true;do
-p="0";while [ "$j" -lt 9 ];do
-j=$((j+1));printf %s\\n "%{c}$d$p$j";sleep 60;done
-p="";while [ "$j" -lt 59 ];do
-j=$((j+1));printf %s\\n "%{c}$d$p$j";sleep 60;done
-j=$(($(date +%-M)-1)) d=$(date '+%a %b %d, %H:');done
+z="0"
+s=$(date +%-M)
+d=$(date '+%a %b %d, %H:')
+if [ "$s" -gt 9 ]; then
+	z=""
+fi
+printf "%%{c}$d$z$s\n"
+sleep $((61-$(date +%-S)))
+while true; do
+	z="0"
+	while [ "$s" -lt 9 ]; do
+		s=$((s+1))
+		printf "%%{c}$d$z$s\n"
+		sleep 60
+	done
+	z=""
+	while [ "$s" -lt 59 ]; do
+		s=$((s+1))
+		printf "%%{c}$d$z$s\n"
+		sleep 60
+	done
+	s=$(($(date +%-M)-1))
+	d=$(date '+%a %b %d, %H:')
+done
