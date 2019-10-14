@@ -1,19 +1,19 @@
 #!/bin/sh
-s=$(date +%M)
+m=$(date +%M)
 d=$(date '+%a %b %d, %H')
-printf "%%{c}$d:$s\n"
+printf "%%{c}$d:$m\n"
 sleep $((61-$(date +%-S)))
 while true; do
-	while [ "$s" -lt 9 ]; do
-		s=$((s+1))
-		printf "%%{c}$d:0$s\n"
-		sleep 60
-	done
-	while [ "$s" -lt 59 ]; do
-		s=$((s+1))
-		printf "%%{c}$d:$s\n"
-		sleep 60
-	done
-	s=$(($(date +%M)-1))
+	m=$(($(date +%-M)-1))
 	d=$(date '+%a %b %d, %H')
+	while [ $m -lt 9 ]; do
+		m=$((m+1))
+		printf "%%{c}$d:0$m\n"
+		sleep 60
+	done
+	while [ $m -lt 59 ]; do
+		m=$((m+1))
+		printf "%%{c}$d:$m\n"
+		sleep 60
+	done
 done
