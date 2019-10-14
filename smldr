@@ -1,23 +1,19 @@
 #!/bin/sh
-s=$(date +%-M)
-d=$(date '+%a %b %d, %H:')
-if [ "$s" -lt 9 ]; then
-	printf "%%{c}$d'\b0$s\n"
-else
-	printf "%%{c}$d$s\n"
-fi
+s=$(date +%M)
+d=$(date '+%a %b %d, %H')
+printf "%%{c}$d:$s\n"
 sleep $((61-$(date +%-S)))
 while true; do
 	while [ "$s" -lt 9 ]; do
 		s=$((s+1))
-		printf "%%{c}$d'\b0$s\n"
+		printf "%%{c}$d:0$s\n"
 		sleep 60
 	done
 	while [ "$s" -lt 59 ]; do
 		s=$((s+1))
-		printf "%%{c}$d$s\n"
+		printf "%%{c}$d:$s\n"
 		sleep 60
 	done
-	s=$(($(date +%-M)-1))
-	d=$(date '+%a %b %d, %H:')
+	s=$(($(date +%M)-1))
+	d=$(date '+%a %b %d, %H')
 done
