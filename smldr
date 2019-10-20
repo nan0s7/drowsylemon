@@ -1,11 +1,13 @@
 #!/bin/sh
-m=$(date +%M)
-d=$(date '+%a %b %d, %H')
+d=$(date '+%a %b %d, %H:%M')
+m=${d#*:}; d=${d%:*}
 printf "%%{c}$d:$m\n"
 sleep $((61-$(date +%-S)))
 while true; do
-	m=$(($(date +%-M)-1))
-	d=$(date '+%a %b %d, %H')
+	d=$(date '+%a %b %d, %H:%-M')
+	m=${d#*:}
+	m=$((m-1))
+	d=${d%:*}
 	while [ $m -lt 9 ]; do
 		m=$((m+1))
 		printf "%%{c}$d:0$m\n"
