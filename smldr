@@ -6,16 +6,15 @@ sleep $((61-$(date +%-S)))
 while true; do
 	d=$(date '+%a %b %d, %H:%-M')
 	m=${d#*:}
-	m=$((m-1))
 	d=${d%:*}
 	while [ $m -lt 9 ]; do
-		m=$((m+1))
 		printf "%%{c}$d:0$m\n"
+		m=$((m+1))
 		sleep 60
 	done
 	while [ $m -lt 59 ]; do
-		m=$((m+1))
 		printf "%%{c}$d:$m\n"
+		m=$((m+1))
 		sleep 60
 	done
 done
