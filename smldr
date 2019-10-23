@@ -7,12 +7,12 @@ while true; do
 	d=$(date '+%a %b %d, %H:%-M')
 	m=${d#*:}
 	d=${d%:*}
-	while [ $m -lt 9 ]; do
+	while [ $m -lt 10 ]; do
 		printf "%%{c}$d:0$m\n"
 		m=$((m+1))
 		sleep 60
 	done
-	while [ $m -lt 59 ]; do
+	while [ $m -lt 60 ]; do
 		printf "%%{c}$d:$m\n"
 		m=$((m+1))
 		sleep 60
